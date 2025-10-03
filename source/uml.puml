@@ -1,0 +1,80 @@
+@startuml ERD_Rehab_Center_v2
+hide circle
+skinparam linetype ortho
+
+entity Patient {
+  *patient_id : integer <<PK>>
+  --
+  *diagnosis_id : integer <<FK>>
+  name : varchar(100)
+  birth_date : date
+  phone : varchar(15)
+}
+
+entity Therapist {
+  *therapist_id : integer <<PK>>
+  --
+  name : varchar(100)
+  specialization : varchar(50)
+}
+
+entity Procedure {
+  *procedure_id : integer <<PK>>
+  --
+  title : varchar(100)
+  cost : decimal(10,2)
+}
+
+entity Session {
+  *session_id : integer <<PK>>
+  --
+  *patient_id : integer <<FK>>
+  *therapist_id : integer <<FK>>
+  *procedure_id : integer <<FK>>
+  date : datetime
+  duration_minutes : integer
+  status : varchar(20)
+}
+
+entity Diagnosis {
+  *diagnosis_id : integer <<PK>>
+  --
+  title : varchar(100)
+  description : text
+}
+
+entity Invoice {
+  *invoice_id : integer <<PK>>
+  --
+  *session_id : integer <<FK>>
+  amount : decimal(10,2)
+  issue_date : date
+  payment_status : varchar(20)
+}
+
+entity Therapist_Procedure {
+  *therapist_id : integer <<PK/FK>>
+  *procedure_id : integer <<PK/FK>>
+  --
+}
+
+
+' 1:1
+Session ||--|| Invoice : generated_invoice
+
+' 1:N
+Diagnosis ||--o{ Patient : has_primary
+
+' 1:N
+Patient ||--o{ Session : has
+
+' 1:N
+Therapist ||--o{ Session : conducts
+
+' 1:N
+Procedure ||--o{ Session : includes
+
+' N:M 
+Therapist }|--|{ Procedure : provides_ability (через Therapist_Procedure)
+
+@enduml
