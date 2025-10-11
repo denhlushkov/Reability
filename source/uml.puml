@@ -52,13 +52,6 @@ entity Invoice {
   payment_status : varchar(20)
 }
 
-entity Therapist_Procedure {
-  *therapist_id : integer <<PK/FK>>
-  *procedure_id : integer <<PK/FK>>
-  --
-}
-
-
 ' 1:1
 Session ||--|| Invoice : generated_invoice
 
@@ -73,8 +66,5 @@ Therapist ||--o{ Session : conducts
 
 ' 1:N
 Procedure ||--o{ Session : includes
-
-' N:M 
-Therapist }|--|{ Procedure : provides_ability (через Therapist_Procedure)
 
 @enduml
