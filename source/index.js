@@ -7,9 +7,10 @@ class Diagnosis {
 }
 
 class Patient {
-  constructor(patient_id, diagnosis_id, name, phone) {
+  constructor(patient_id, diagnosis_id, birth_date, name, phone) {
     this.patient_id = patient_id;
     this.diagnosis_id = diagnosis_id;
+    this.birth_date = birth_date;
     this.name = name;
     this.phone = phone;
   }
@@ -60,15 +61,4 @@ class Invoice {
   }
   
   get session() {}
-}
-
-class TherapistProcedure {
-  constructor(therapist_id, procedure_id) {
-    this.therapist_id = therapist_id;
-    this.procedure_id = procedure_id;
-  }
-  
-  get therapist() {}
-  
-  get procedure() {}
 }
