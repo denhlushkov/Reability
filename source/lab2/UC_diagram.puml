@@ -18,12 +18,9 @@ package MedicalSystem {
     (UC08: Process Transaction) as UC_PROCESS_TRANS
     (UC09: Update Session Status) as UC_UPDATE_STATUS
     (UC10: Send Notification) as UC_NOTIFY
-
-    ' Auxiliary Use Cases (UC11 - UC12)
     (UC11: Check Availability) as UC_CHECK_AVAIL
     (UC12: Check Patient History) as UC_CHECK_HISTORY
 
-    ' Actor Associations
     P -- UC_BOOK
     P -- UC_VIEW_SCHED
     P -- UC_VIEW_INV
@@ -33,27 +30,15 @@ package MedicalSystem {
     T -- UC_CREATE_INV
     EPS -- UC_PROCESS_TRANS
 
-    ' Include/Extend Relationships
-
-    ' Core Logic Flows
     UC_BOOK .> UC_CHECK_AVAIL : <<include>>
     UC_BOOK .> UC_NOTIFY : <<extend>> 
-
     UC_VIEW_SCHED .> UC_CHECK_AVAIL : <<include>>
     UC_PAY .> UC_PROCESS_TRANS : <<include>>
-
-    ' Record Data Logic
     UC_RECORD_DATA .> UC_CHECK_HISTORY : <<include>>
-
-    ' Financial & Status Flows
     UC_CREATE_INV .> UC_UPDATE_STATUS : <<include>>
     UC_PROCESS_TRANS .> UC_UPDATE_STATUS : <<include>>
-
-    ' Notification Flows
     UC_UPDATE_STATUS .> UC_NOTIFY : <<include>>
     UC_MANAGE_T_SCHED .> UC_NOTIFY : <<extend>> 
-
-    ' Interconnection of Auxiliary UCs
     UC_CHECK_AVAIL .> UC_CHECK_HISTORY : <<extend>>
     UC_CREATE_INV .> UC_RECORD_DATA : <<extend>>
 }
