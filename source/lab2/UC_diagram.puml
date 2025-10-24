@@ -7,70 +7,57 @@ actor "Therapist" as T
 actor "External Payment System" as EPS
 
 package MedicalSystem {
-    ' Варіанти використання Пацієнта
-    (UC01: Забронювати сесію) as UC_BOOK
-    (UC02: Переглянути свій графік) as UC_VIEW_P_SCHED
-    (UC03: Оплатити рахунок) as UC_PAY
+    ' Core Use Cases (UC01 - UC07)
+    (UC01: Book Session) as UC_BOOK
+    (UC02: View Schedule) as UC_VIEW_SCHED
+    (UC03: Pay Invoice) as UC_PAY
+    (UC04: Manage Availability) as UC_MANAGE_T_SCHED
+    (UC05: Record Patient Data) as UC_RECORD_DATA
+    (UC06: Create Invoice) as UC_CREATE_INV
+    (UC07: Process Transaction) as UC_PROCESS_TRANS
 
-    ' Варіанти використання Терапевта
-    (UC04: Керувати графіком) as UC_MANAGE_T_SCHED
-    (UC05: Записати дані в картку) as UC_RECORD_DATA
-    (UC06: Створити рахунок) as UC_CREATE_INV
+    ' Auxiliary Use Cases (UC08 - UC11)
+    (UC08: Update Session Status) as UC_UPDATE_STATUS
+    (UC09: Send Notification) as UC_NOTIFY
+    (UC10: Check Availability) as UC_CHECK_AVAIL
+    (UC11: Check Patient History) as UC_CHECK_HISTORY
 
-    ' Варіант використання Системи оплати
-    (UC07: Обробка транзакції) as UC_PROCESS_TRANS
-
-    ' Допоміжні UC для забезпечення зв'язків
-    (UC10: Перевірити доступність) as UC_CHECK_AVAIL
-    (UC11: Перевірити історію пацієнта) as UC_CHECK_HISTORY
-    (UC12: Оновити статус сесії) as UC_UPDATE_STATUS
-    (UC13: Надіслати сповіщення) as UC_NOTIFY
-
-    ' Асоціації Акторів
+    ' Actor Associations
     P -- UC_BOOK
-    P -- UC_VIEW_P_SCHED
+    P -- UC_VIEW_SCHED
     P -- UC_PAY
     T -- UC_MANAGE_T_SCHED
     T -- UC_RECORD_DATA
     T -- UC_CREATE_INV
     EPS -- UC_PROCESS_TRANS
 
-    ' Зв'язки Між UC (Взаємодія)
+    ' Include/Extend Relationships
 
-    ' 1. Зв'язок для UC01: Забронювати сесію
+    ' UC01: Book Session
     UC_BOOK .> UC_CHECK_AVAIL : <<include>>
     UC_BOOK .> UC_NOTIFY : <<extend>>
 
-    ' 2. Зв'язок для UC02: Переглянути свій графік
-    UC_VIEW_P_SCHED .> UC_CHECK_AVAIL : <<include>>
+    ' UC02: View Schedule
+    UC_VIEW_SCHED .> UC_CHECK_AVAIL : <<include>> 
 
-    ' 3. Зв'язок для UC03: Оплатити рахунок
+    ' UC03: Pay Invoice
     UC_PAY .> UC_PROCESS_TRANS : <<include>>
 
-    ' 4. Зв'язок для UC04: Керувати графіком
-    UC_MANAGE_T_SCHED .> UC_NOTIFY : <<extend>>
+    ' UC04: Manage Availability
+    UC_MANAGE_T_SCHED .> UC_NOTIFY : <<extend>> 
 
-    ' 5. Зв'язок для UC05: Записати дані в картку
+    ' UC05: Record Patient Data
     UC_RECORD_DATA .> UC_CHECK_HISTORY : <<include>>
 
-    ' 6. Зв'язок для UC06: Створити рахунок
+    ' UC06: Create Invoice
     UC_CREATE_INV .> UC_UPDATE_STATUS : <<include>>
     UC_CREATE_INV .> UC_RECORD_DATA : <<extend>> 
 
-    ' 7. Зв'язок для UC07: Обробка транзакції
+    ' UC07: Process Transaction
     UC_PROCESS_TRANS .> UC_UPDATE_STATUS : <<include>>
 
-    ' 8. Зв'язок для UC10: Перевірити доступність
-    UC_CHECK_AVAIL .> UC_CHECK_HISTORY : <<extend>> 
-
-    ' 9. Зв'язок для UC11: Перевірити історію пацієнта
-    ' Зв'язок вже є (UC05 -> UC11; UC10 -> UC11)
-
-    ' 10. Зв'язок для UC12: Оновити статус сесії
-    ' Зв'язок вже є (UC06 -> UC12; UC07 -> UC12)
+    ' Interconnection of Auxiliary UCs
+    UC_CHECK_AVAIL .> UC_CHECK_HISTORY : <<extend>>
     UC_UPDATE_STATUS .> UC_NOTIFY : <<include>>
-
-    ' 11. Зв'язок для UC13: Надіслати сповіщення
-    ' Зв'язок вже є (UC01 -> UC13; UC04 -> UC13; UC12 -> UC13)
 }
 @enduml
