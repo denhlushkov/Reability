@@ -7,24 +7,26 @@ actor "Therapist" as T
 actor "External Payment System" as EPS
 
 package MedicalSystem {
-    ' Core Use Cases (UC01 - UC07)
+    ' Core Use Cases (UC01 - UC10)
     (UC01: Book Session) as UC_BOOK
     (UC02: View Schedule) as UC_VIEW_SCHED
-    (UC03: Pay Invoice) as UC_PAY
-    (UC04: Manage Availability) as UC_MANAGE_T_SCHED
-    (UC05: Record Patient Data) as UC_RECORD_DATA
-    (UC06: Create Invoice) as UC_CREATE_INV
-    (UC07: Process Transaction) as UC_PROCESS_TRANS
+    (UC03: View Invoice) as UC_VIEW_INV
+    (UC04: Pay Invoice) as UC_PAY
+    (UC05: Manage Availability) as UC_MANAGE_T_SCHED
+    (UC06: Record Patient Data) as UC_RECORD_DATA
+    (UC07: Create Invoice) as UC_CREATE_INV
+    (UC08: Process Transaction) as UC_PROCESS_TRANS
+    (UC09: Update Session Status) as UC_UPDATE_STATUS
+    (UC10: Send Notification) as UC_NOTIFY
 
-    ' Auxiliary Use Cases (UC08 - UC11)
-    (UC08: Update Session Status) as UC_UPDATE_STATUS
-    (UC09: Send Notification) as UC_NOTIFY
-    (UC10: Check Availability) as UC_CHECK_AVAIL
-    (UC11: Check Patient History) as UC_CHECK_HISTORY
+    ' Auxiliary Use Cases (UC11 - UC12)
+    (UC11: Check Availability) as UC_CHECK_AVAIL
+    (UC12: Check Patient History) as UC_CHECK_HISTORY
 
     ' Actor Associations
     P -- UC_BOOK
     P -- UC_VIEW_SCHED
+    P -- UC_VIEW_INV
     P -- UC_PAY
     T -- UC_MANAGE_T_SCHED
     T -- UC_RECORD_DATA
@@ -33,31 +35,26 @@ package MedicalSystem {
 
     ' Include/Extend Relationships
 
-    ' UC01: Book Session
+    ' Core Logic Flows
     UC_BOOK .> UC_CHECK_AVAIL : <<include>>
-    UC_BOOK .> UC_NOTIFY : <<extend>>
+    UC_BOOK .> UC_NOTIFY : <<extend>> 
 
-    ' UC02: View Schedule
-    UC_VIEW_SCHED .> UC_CHECK_AVAIL : <<include>> 
-
-    ' UC03: Pay Invoice
+    UC_VIEW_SCHED .> UC_CHECK_AVAIL : <<include>>
     UC_PAY .> UC_PROCESS_TRANS : <<include>>
 
-    ' UC04: Manage Availability
-    UC_MANAGE_T_SCHED .> UC_NOTIFY : <<extend>> 
-
-    ' UC05: Record Patient Data
+    ' Record Data Logic
     UC_RECORD_DATA .> UC_CHECK_HISTORY : <<include>>
 
-    ' UC06: Create Invoice
+    ' Financial & Status Flows
     UC_CREATE_INV .> UC_UPDATE_STATUS : <<include>>
-    UC_CREATE_INV .> UC_RECORD_DATA : <<extend>> 
-
-    ' UC07: Process Transaction
     UC_PROCESS_TRANS .> UC_UPDATE_STATUS : <<include>>
+
+    ' Notification Flows
+    UC_UPDATE_STATUS .> UC_NOTIFY : <<include>>
+    UC_MANAGE_T_SCHED .> UC_NOTIFY : <<extend>> 
 
     ' Interconnection of Auxiliary UCs
     UC_CHECK_AVAIL .> UC_CHECK_HISTORY : <<extend>>
-    UC_UPDATE_STATUS .> UC_NOTIFY : <<include>>
+    UC_CREATE_INV .> UC_RECORD_DATA : <<extend>>
 }
 @enduml
