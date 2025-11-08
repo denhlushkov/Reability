@@ -1,0 +1,70 @@
+@startuml Sequence Diagram: Patient Registration & Assignment
+
+actor Patient
+actor Therapist
+participant Server as API_Server
+database Database
+
+title UC: Patient Registration and Initial Program Assignment
+
+autonumber
+
+activate Patient
+activate Therapist
+activate API_Server
+
+== 1. Patient Registration ==
+Patient -> API_Server: requestRegistration(details)
+activate API_Server
+API_Server -> API_Server: validateDetails()
+
+alt Details are valid
+    API_Server -> Database: saveNewPatient(patientData)
+    activate Database
+    Database --> API_Server: return patientId
+    deactivate Database
+    API_Server --> Patient: return Confirmation(patientId)
+else Details are invalid
+    API_Server --> Patient: return Error(Invalid data format)
+end
+
+deactivate API_Server
+
+== 2. Program Appointment ==
+
+Therapist -> API_Server: login(credentials)
+activate API_Server
+API_Server --> Therapist: return SessionToken
+
+Therapist -> API_Server: getPatientDetails(patientId, token)
+API_Server -> Database: fetchPatientRecord(patientId)
+activate Database
+Database --> API_Server: return PatientRecord
+deactivate Database
+
+loop For each required exercise (Assessment)
+    Therapist -> API_Server: recordAssessment(patientId, result)
+    API_Server -> Database: updatePatientRecord(assessment)
+end
+
+API_Server --> Therapist: return AssessmentSaved
+
+Therapist -> API_Server: assignProgram(patientId, programDetails)
+activate API_Server
+
+opt Program requires immediate notification
+    API_Server -> API_Server: generateNotification(programLink)
+    API_Server --> Patient: pushNotification(New Program Assigned)
+end
+
+API_Server -> Database: saveProgramAssignment(patientId, programDetails)
+activate Database
+Database --> API_Server: return ProgramSavedConfirmation
+deactivate Database
+API_Server --> Therapist: return Confirmation(Program Assigned)
+
+deactivate API_Server
+deactivate Therapist
+deactivate Patient
+
+@enduml
