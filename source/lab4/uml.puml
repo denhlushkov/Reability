@@ -1,0 +1,50 @@
+@startuml
+title Therapy Session Booking Process
+
+' Visual Styling
+skinparam ActivityBackgroundColor #F0F8FF
+skinparam ActivityBorderColor #4682B4
+skinparam ActivityDiamondBackgroundColor #E6E6FA
+
+' Define Swimlanes (Roles)
+|Patient|
+start
+:Request Appointment;
+:Select Procedure & Date;
+
+|System|
+:Receive Booking Request;
+:Check Schedule Availability;
+
+' Exclusive Gateway (Decision)
+if (Is Slot Available?) then (No)
+    |System|
+    :Generate Error Message;
+    |Patient|
+    :Receive "Slot Taken" Notification;
+    stop
+else (Yes)
+    |System|
+    :Create Session Record
+    (Status: Scheduled);
+    :Update Schedule
+    (Set is_available = FALSE);
+    
+    ' Parallel Gateway (Fork)
+    fork
+        :Send Confirmation Email;
+        |Patient|
+        :Receive Booking Confirmation;
+    fork again
+        |System|
+        :Generate Therapist Notification;
+        |Therapist|
+        :Receive Schedule Update;
+    end fork
+    
+    |System|
+    :Log Transaction;
+    stop
+endif
+
+@enduml
